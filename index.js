@@ -45,6 +45,7 @@ for (let i = 0; i != 60; ++i) {
       new THREE.PlaneBufferGeometry(minuteTickWidth, minuteTickLength);
   const minuteTickMaterial =
       new THREE.MeshPhongMaterial({color: minuteTickColor});
+  minuteTickMaterial.depthTest = false;
   const minuteTick = new THREE.Mesh(minuteTickGeometry, minuteTickMaterial);
 
   if (isFiveMinuteMark) {
