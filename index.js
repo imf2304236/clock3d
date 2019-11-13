@@ -71,19 +71,37 @@ for (let i = 0; i != 60; ++i) {
 
 // Add hour-hand
 const hourHandColor = 'black';
-const hourHandRadius = 2;
+const hourHandRadius = 1;
 const hourHandWidthSegments = 32;
 const hourHandRadialSegments = 32;
 const hourHandGeometry = new THREE.SphereBufferGeometry(
     hourHandRadius, hourHandWidthSegments, hourHandRadialSegments);
-const hourHandMaterial = new THREE.MeshPhongMaterial({color: hourHandColor});
+const hourHandMaterial = new THREE.MeshPhongMaterial(
+    {color: hourHandColor},
+);
 const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
-hourHand.scale.y = bodyRadius / 2 / hourHandRadius;
-hourHand.position.y = bodyRadius / 2;
+hourHand.scale.y = bodyRadius / 4 / hourHandRadius;
+hourHand.rotateZ(Math.PI / 2);
+hourHand.position.x = bodyRadius / 4;
 hourHand.position.z = bodyHeight / 2;
 scene.add(hourHand);
 
-// TODO: Add minute-hand
+// Add minute-hand
+const minuteHandColor = 'black';
+const minuteHandRadius = 1;
+const minuteHandWidthSegments = 32;
+const minuteHandRadialSegments = 32;
+const minuteHandGeometry = new THREE.SphereBufferGeometry(
+    minuteHandRadius, minuteHandWidthSegments, minuteHandRadialSegments);
+const minuteHandMaterial = new THREE.MeshPhongMaterial(
+    {color: minuteHandColor},
+);
+const minuteHand = new THREE.Mesh(minuteHandGeometry, minuteHandMaterial);
+minuteHand.scale.y = bodyRadius / 2 / minuteHandRadius;
+minuteHand.position.y = bodyRadius / 2;
+minuteHand.position.z = bodyHeight / 2;
+scene.add(minuteHand);
+
 // TODO: Add second-hand
 // TODO: Show current time
 // TODO: Add hand mount
