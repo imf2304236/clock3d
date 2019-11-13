@@ -119,8 +119,19 @@ secondHand.position.y = -secondHandHeight / 2;
 secondHand.position.z = bodyHeight / 2;
 scene.add(secondHand);
 
+// Add hand mount
+const handMountColor = 'black';
+const handMountRadius = 2;
+const handMountWidthSegments = 32;
+const handMountRadialSegments = 32;
+const handMountGeometry = new THREE.SphereBufferGeometry(
+    handMountRadius, handMountWidthSegments, handMountRadialSegments);
+const handMountMaterial = new THREE.MeshPhongMaterial({color: handMountColor});
+const handMount = new THREE.Mesh(handMountGeometry, handMountMaterial);
+handMount.position.z = bodyHeight / 2;
+scene.add(handMount);
+
 // TODO: Show current time
-// TODO: Add hand mount
 // TODO: Duplicate clock on backside
 // TODO: Show San Francisco time on second clock
 // TODO: Add outer ring
