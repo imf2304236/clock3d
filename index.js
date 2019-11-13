@@ -69,7 +69,20 @@ for (let i = 0; i != 60; ++i) {
   scene.add(minuteTick);
 }
 
-// TODO: Add hour-hand
+// Add hour-hand
+const hourHandColor = 'black';
+const hourHandRadius = 2;
+const hourHandWidthSegments = 32;
+const hourHandRadialSegments = 32;
+const hourHandGeometry = new THREE.SphereBufferGeometry(
+    hourHandRadius, hourHandWidthSegments, hourHandRadialSegments);
+const hourHandMaterial = new THREE.MeshPhongMaterial({color: hourHandColor});
+const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
+hourHand.scale.y = bodyRadius / 2 / hourHandRadius;
+hourHand.position.y = bodyRadius / 2;
+hourHand.position.z = bodyHeight / 2;
+scene.add(hourHand);
+
 // TODO: Add minute-hand
 // TODO: Add second-hand
 // TODO: Show current time
