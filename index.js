@@ -37,8 +37,8 @@ scene.add(body);
 // Add minute ticks
 const minuteTickWidth = 1;
 const minuteTickLength = 5;
-const minuteTickColor = 'black';
 for (let i = 0; i != 60; ++i) {
+  const minuteTickColor = (i == 0) ? 'skyblue' : 'black';
   const isFiveMinuteMark = (i % 5 == 0);
   const minuteTickGeometry = isFiveMinuteMark ?
       new THREE.PlaneBufferGeometry(minuteTickWidth * 2, minuteTickLength * 2) :
@@ -69,7 +69,6 @@ for (let i = 0; i != 60; ++i) {
   scene.add(minuteTick);
 }
 
-// TODO: Mark 12 o'clock position
 // TODO: Add hour-hand
 // TODO: Add minute-hand
 // TODO: Add second-hand
