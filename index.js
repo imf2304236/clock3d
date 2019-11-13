@@ -23,7 +23,7 @@ scene.add(light);
 
 // Add main body
 const bodyRadius = 50;
-const bodyHeight = 5;
+const bodyHeight = 1;
 const bodyRadialSegments = 64;
 const bodyHeightSegments = 64;
 const bodyColor = 'white';
@@ -131,10 +131,29 @@ const handMount = new THREE.Mesh(handMountGeometry, handMountMaterial);
 handMount.position.z = bodyHeight / 2;
 scene.add(handMount);
 
+// Add outer ring
+const ringColor = 'skyblue';
+const ringRadius = bodyRadius;
+const ringHeight = bodyHeight * 4;
+const ringThickness = 5;
+const points = new Array(5);
+points[0] = new THREE.Vector2(ringRadius, 0);
+points[1] = new THREE.Vector2(ringRadius, ringHeight);
+points[2] = new THREE.Vector2(ringRadius + ringThickness, ringHeight);
+points[3] = new THREE.Vector2(ringRadius + ringThickness, 0);
+points[4] = new THREE.Vector2(ringRadius, 0);
+const ringGeometry = new THREE.LatheGeometry( points, 200);
+ringGeometry.computeFlatVertexNormals();
+const ringMaterial = new THREE.MeshPhongMaterial(
+    {color: new THREE.Color(ringColor), side: THREE.DoubleSide});
+const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+ring.rotateX(Math.PI / 2);
+ring.position.z = -ringHeight / 2;
+scene.add(ring);
+
 // TODO: Show current time
 // TODO: Duplicate clock on backside
 // TODO: Show San Francisco time on second clock
-// TODO: Add outer ring
 
 const controls = new THREE.TrackballControls(camera, canvas);
 
