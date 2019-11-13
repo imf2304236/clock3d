@@ -102,7 +102,21 @@ minuteHand.position.y = bodyRadius / 2;
 minuteHand.position.z = bodyHeight / 2;
 scene.add(minuteHand);
 
-// TODO: Add second-hand
+// Add second-hand
+const secondHandColor = 'red';
+const secondHandWidth = 1;
+const secondHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
+const secondHandGeometry = new THREE.PlaneBufferGeometry(
+    secondHandWidth, secondHandHeight);
+const secondHandMaterial = new THREE.MeshPhongMaterial(
+    {color: secondHandColor},
+);
+secondHandMaterial.depthTest = false;
+const secondHand = new THREE.Mesh(secondHandGeometry, secondHandMaterial);
+secondHand.position.y = -secondHandHeight / 2;
+secondHand.position.z = bodyHeight / 2;
+scene.add(secondHand);
+
 // TODO: Show current time
 // TODO: Add hand mount
 // TODO: Duplicate clock on backside
