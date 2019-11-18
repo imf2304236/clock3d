@@ -23,7 +23,7 @@ scene.add(light);
 
 // Add main body
 const bodyRadius = 50;
-const bodyHeight = 1;
+const bodyHeight = 10;
 const bodyRadialSegments = 64;
 const bodyHeightSegments = 64;
 const bodyColor = 'white';
@@ -63,10 +63,14 @@ for (let i = 0; i != 60; ++i) {
         bodyRadius * Math.cos(Math.PI * i / 30) -
             Math.cos(Math.PI * i / 30) * minuteTickLength / 2;
   }
+  const minuteTickSecondary = minuteTick.clone();
   minuteTick.position.z = bodyHeight / 2;
-
+  minuteTickSecondary.position.z = -bodyHeight / 2;
+  minuteTickSecondary.rotateY(Math.PI);
   minuteTick.rotateZ(-i * Math.PI / 30);
+  minuteTickSecondary.rotateZ(i * Math.PI / 30);
   scene.add(minuteTick);
+  scene.add(minuteTickSecondary);
 }
 
 // Add hand mount
@@ -78,13 +82,16 @@ const handMountGeometry = new THREE.SphereBufferGeometry(
     handMountRadius, handMountWidthSegments, handMountRadialSegments);
 const handMountMaterial = new THREE.MeshPhongMaterial({color: handMountColor});
 const handMount = new THREE.Mesh(handMountGeometry, handMountMaterial);
+const handMountSecondary = handMount.clone();
 handMount.position.z = bodyHeight / 2;
+handMountSecondary.position.z = -bodyHeight / 2;
 scene.add(handMount);
+scene.add(handMountSecondary);
 
 // Add outer ring
 const ringColor = 'skyblue';
 const ringRadius = bodyRadius;
-const ringHeight = bodyHeight * 4;
+const ringHeight = bodyHeight * 2;
 const ringThickness = 5;
 const points = new Array(5);
 points[0] = new THREE.Vector2(ringRadius, 0);
@@ -118,8 +125,11 @@ const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
 hourHand.scale.x = hourHandHeight / hourHandWidth;
 hourHand.rotateZ(Math.PI / 2);
 hourHand.position.y = hourHandHeight / 2;
+const hourHandSecondary = hourHand.clone();
 hourHand.position.z = bodyHeight / 2;
+hourHandSecondary.position.z = -bodyHeight / 2;
 scene.add(hourHand);
+scene.add(hourHandSecondary);
 
 // Add minute-hand
 const minuteHandColor = 'black';
@@ -136,8 +146,11 @@ const minuteHand = new THREE.Mesh(minuteHandGeometry, minuteHandMaterial);
 minuteHand.scale.x = minuteHandHeight / minuteHandWidth;
 minuteHand.rotateZ(Math.PI / 2);
 minuteHand.position.y = minuteHandHeight / 2;
+const minuteHandSecondary = minuteHand.clone();
 minuteHand.position.z = bodyHeight / 2;
+minuteHandSecondary.position.z = -bodyHeight / 2;
 scene.add(minuteHand);
+scene.add(minuteHandSecondary);
 
 // Add second-hand
 const secondHandColor = 'red';
@@ -146,16 +159,16 @@ const secondHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
 const secondHandGeometry = new THREE.PlaneBufferGeometry(
     secondHandWidth, secondHandHeight);
 const secondHandMaterial = new THREE.MeshPhongMaterial(
-    {color: secondHandColor},
-);
-secondHandMaterial.depthTest = false;
+    {color: secondHandColor, side: THREE.DoubleSide});
 const secondHand = new THREE.Mesh(secondHandGeometry, secondHandMaterial);
 secondHand.position.y = secondHandHeight / 2;
-secondHand.position.z = bodyHeight / 2;
+const secondHandSecondary = secondHand.clone();
+secondHandSecondary.rotateY(Math.PI);
+const secondHandZOffset = 0.01; // fixes depthTest rendering issues
+secondHand.position.z = bodyHeight / 2 + secondHandZOffset;
+secondHandSecondary.position.z = -bodyHeight / 2 - secondHandZOffset;
 scene.add(secondHand);
-
-// TODO: Duplicate clock on backside
-// TODO: Show San Francisco time on second clock
+scene.add(secondHandSecondary);
 
 const controls = new THREE.TrackballControls(camera, canvas);
 
@@ -166,37 +179,67 @@ function render() {
   requestAnimationFrame(render);
 
   const hours = date.getHours();
+  const hoursSecondary = hours - 9; // Time in San Francisco, CA, USA
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
 
-  console.log(hours);
+  const radiansPerHour = Math.PI / 6;
+  const radiansPerMinute = Math.PI / 30;
+  const radiansPerSecond = radiansPerMinute;
 
   hourHand.position.set(
-      hourHandHeight / 2 * Math.sin(Math.PI / 6 * hours),
-      hourHandHeight / 2 * Math.cos(Math.PI / 6 * hours),
+      hourHandHeight / 2 * Math.sin(radiansPerHour * hours),
+      hourHandHeight / 2 * Math.cos(radiansPerHour * hours),
       hourHand.position.z,
   );
   const hourHandRotationAngle =
-      new THREE.Euler(0, 0, -Math.PI / 6 * hours + Math.PI / 2);
+      new THREE.Euler(0, 0, -radiansPerHour * hours + Math.PI / 2);
   hourHand.setRotationFromEuler(hourHandRotationAngle);
 
+  hourHandSecondary.position.set(
+      hourHandHeight / 2 * -Math.sin(radiansPerHour * hoursSecondary),
+      hourHandHeight / 2 * Math.cos(radiansPerHour * hoursSecondary),
+      hourHandSecondary.position.z,
+  );
+  const hourHandSecondaryRotationAngle =
+      new THREE.Euler(0, 0, radiansPerHour * hoursSecondary + Math.PI / 2);
+  hourHandSecondary.setRotationFromEuler(hourHandSecondaryRotationAngle);
+
   minuteHand.position.set(
-      minuteHandHeight / 2 * Math.sin(Math.PI / 30 * minutes),
-      minuteHandHeight / 2 * Math.cos(Math.PI / 30 * minutes),
+      minuteHandHeight / 2 * Math.sin(radiansPerMinute * minutes),
+      minuteHandHeight / 2 * Math.cos(radiansPerMinute * minutes),
       minuteHand.position.z,
   );
   const minuteHandRotationAngle =
-      new THREE.Euler(0, 0, -Math.PI / 30 * minutes + Math.PI / 2);
+      new THREE.Euler(0, 0, -radiansPerMinute * minutes + Math.PI / 2);
   minuteHand.setRotationFromEuler(minuteHandRotationAngle);
 
+  minuteHandSecondary.position.set(
+      minuteHandHeight / 2 * -Math.sin(radiansPerMinute * minutes),
+      minuteHandHeight / 2 * Math.cos(radiansPerMinute * minutes),
+      minuteHandSecondary.position.z,
+  );
+  const minuteHandSecondaryRotationAngle =
+      new THREE.Euler(0, 0, radiansPerSecond * minutes + Math.PI / 2);
+  minuteHandSecondary.setRotationFromEuler(minuteHandSecondaryRotationAngle);
+
   secondHand.position.set(
-      secondHandHeight / 2 * Math.sin(Math.PI / 30 * seconds),
-      secondHandHeight / 2 * Math.cos(Math.PI / 30 * seconds),
+      secondHandHeight / 2 * Math.sin(radiansPerSecond * seconds),
+      secondHandHeight / 2 * Math.cos(radiansPerSecond * seconds),
       secondHand.position.z,
   );
   const secondHandRotationAngle =
-      new THREE.Euler(0, 0, -Math.PI * seconds / 30);
+      new THREE.Euler(0, 0, -radiansPerSecond * seconds);
   secondHand.setRotationFromEuler(secondHandRotationAngle);
+
+  secondHandSecondary.position.set(
+      secondHandHeight / 2 * -Math.sin(radiansPerSecond * seconds),
+      secondHandHeight / 2 * Math.cos(radiansPerSecond * seconds),
+      secondHandSecondary.position.z,
+  );
+  const secondHandSecondaryRotationAngle =
+    new THREE.Euler(0, 0, radiansPerSecond * seconds);
+  secondHandSecondary.setRotationFromEuler(secondHandSecondaryRotationAngle);
 
   date = new Date();
 
