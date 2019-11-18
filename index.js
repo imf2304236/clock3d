@@ -69,56 +69,6 @@ for (let i = 0; i != 60; ++i) {
   scene.add(minuteTick);
 }
 
-// Add hour-hand
-const hourHandColor = 'black';
-const hourHandWidth = 2;
-const hourHandHeight = bodyRadius / 2 + minuteTickLength;
-const hourHandWidthSegments = 32;
-const hourHandRadialSegments = 32;
-const hourHandGeometry = new THREE.SphereBufferGeometry(
-    hourHandWidth / 2, hourHandWidthSegments, hourHandRadialSegments);
-const hourHandMaterial = new THREE.MeshPhongMaterial(
-    {color: hourHandColor},
-);
-const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
-hourHand.scale.x = hourHandHeight / hourHandWidth;
-hourHand.position.x = hourHandHeight / 2;
-hourHand.position.z = bodyHeight / 2;
-scene.add(hourHand);
-
-// Add minute-hand
-const minuteHandColor = 'black';
-const minuteHandWidth = 2;
-const minuteHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
-const minuteHandWidthSegments = 32;
-const minuteHandRadialSegments = 32;
-const minuteHandGeometry = new THREE.SphereBufferGeometry(
-    minuteHandWidth / 2, minuteHandWidthSegments, minuteHandRadialSegments);
-const minuteHandMaterial = new THREE.MeshPhongMaterial(
-    {color: minuteHandColor},
-);
-const minuteHand = new THREE.Mesh(minuteHandGeometry, minuteHandMaterial);
-minuteHand.scale.x = minuteHandHeight / minuteHandWidth;
-minuteHand.rotateZ(Math.PI / 2);
-minuteHand.position.y = minuteHandHeight / 2;
-minuteHand.position.z = bodyHeight / 2;
-scene.add(minuteHand);
-
-// Add second-hand
-const secondHandColor = 'red';
-const secondHandWidth = 1;
-const secondHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
-const secondHandGeometry = new THREE.PlaneBufferGeometry(
-    secondHandWidth, secondHandHeight);
-const secondHandMaterial = new THREE.MeshPhongMaterial(
-    {color: secondHandColor},
-);
-secondHandMaterial.depthTest = false;
-const secondHand = new THREE.Mesh(secondHandGeometry, secondHandMaterial);
-secondHand.position.y = -secondHandHeight / 2;
-secondHand.position.z = bodyHeight / 2;
-scene.add(secondHand);
-
 // Add hand mount
 const handMountColor = 'black';
 const handMountRadius = 2;
@@ -151,7 +101,59 @@ ring.rotateX(Math.PI / 2);
 ring.position.z = -ringHeight / 2;
 scene.add(ring);
 
-// TODO: Show current time
+let date = new Date();
+
+// Add hour-hand
+const hourHandColor = 'black';
+const hourHandWidth = 2;
+const hourHandHeight = bodyRadius / 2 + minuteTickLength;
+const hourHandWidthSegments = 32;
+const hourHandRadialSegments = 32;
+const hourHandGeometry = new THREE.SphereBufferGeometry(
+    hourHandWidth / 2, hourHandWidthSegments, hourHandRadialSegments);
+const hourHandMaterial = new THREE.MeshPhongMaterial(
+    {color: hourHandColor},
+);
+const hourHand = new THREE.Mesh(hourHandGeometry, hourHandMaterial);
+hourHand.scale.x = hourHandHeight / hourHandWidth;
+hourHand.rotateZ(Math.PI / 2);
+hourHand.position.y = hourHandHeight / 2;
+hourHand.position.z = bodyHeight / 2;
+scene.add(hourHand);
+
+// Add minute-hand
+const minuteHandColor = 'black';
+const minuteHandWidth = 2;
+const minuteHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
+const minuteHandWidthSegments = 32;
+const minuteHandRadialSegments = 32;
+const minuteHandGeometry = new THREE.SphereBufferGeometry(
+    minuteHandWidth / 2, minuteHandWidthSegments, minuteHandRadialSegments);
+const minuteHandMaterial = new THREE.MeshPhongMaterial(
+    {color: minuteHandColor},
+);
+const minuteHand = new THREE.Mesh(minuteHandGeometry, minuteHandMaterial);
+minuteHand.scale.x = minuteHandHeight / minuteHandWidth;
+minuteHand.rotateZ(Math.PI / 2);
+minuteHand.position.y = minuteHandHeight / 2;
+minuteHand.position.z = bodyHeight / 2;
+scene.add(minuteHand);
+
+// Add second-hand
+const secondHandColor = 'red';
+const secondHandWidth = 1;
+const secondHandHeight = bodyRadius * 4 / 5 + minuteTickLength;
+const secondHandGeometry = new THREE.PlaneBufferGeometry(
+    secondHandWidth, secondHandHeight);
+const secondHandMaterial = new THREE.MeshPhongMaterial(
+    {color: secondHandColor},
+);
+secondHandMaterial.depthTest = false;
+const secondHand = new THREE.Mesh(secondHandGeometry, secondHandMaterial);
+secondHand.position.y = secondHandHeight / 2;
+secondHand.position.z = bodyHeight / 2;
+scene.add(secondHand);
+
 // TODO: Duplicate clock on backside
 // TODO: Show San Francisco time on second clock
 
@@ -162,6 +164,41 @@ const controls = new THREE.TrackballControls(camera, canvas);
  */
 function render() {
   requestAnimationFrame(render);
+
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  console.log(hours);
+
+  hourHand.position.set(
+      hourHandHeight / 2 * Math.sin(Math.PI / 6 * hours),
+      hourHandHeight / 2 * Math.cos(Math.PI / 6 * hours),
+      hourHand.position.z,
+  );
+  const hourHandRotationAngle =
+      new THREE.Euler(0, 0, -Math.PI / 6 * hours + Math.PI / 2);
+  hourHand.setRotationFromEuler(hourHandRotationAngle);
+
+  minuteHand.position.set(
+      minuteHandHeight / 2 * Math.sin(Math.PI / 30 * minutes),
+      minuteHandHeight / 2 * Math.cos(Math.PI / 30 * minutes),
+      minuteHand.position.z,
+  );
+  const minuteHandRotationAngle =
+      new THREE.Euler(0, 0, -Math.PI / 30 * minutes + Math.PI / 2);
+  minuteHand.setRotationFromEuler(minuteHandRotationAngle);
+
+  secondHand.position.set(
+      secondHandHeight / 2 * Math.sin(Math.PI / 30 * seconds),
+      secondHandHeight / 2 * Math.cos(Math.PI / 30 * seconds),
+      secondHand.position.z,
+  );
+  const secondHandRotationAngle =
+      new THREE.Euler(0, 0, -Math.PI * seconds / 30);
+  secondHand.setRotationFromEuler(secondHandRotationAngle);
+
+  date = new Date();
 
   controls.update();
   renderer.render(scene, camera);
